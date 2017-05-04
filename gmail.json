@@ -1,0 +1,10 @@
+{
+  "GMail": {
+    "LabelName": "gpei"
+  },
+  "Settings": {
+    "RemoveMessages": true,
+    "StorageFolder": "gpei_files",
+    "CleanFolder": true
+  }
+}
