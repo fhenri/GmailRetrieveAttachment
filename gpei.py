@@ -206,13 +206,15 @@ def Zipdir(path, ziph):
             ziph.write(fileToZip, basename(fileToZip))
 
 def Cleandir(path):
-    for file in os.listdir(path):
-        file_path = os.path.join(path, file)
-        try:
-            if os.path.isfile(file_path):
-                os.unlink(file_path)
-        except Exception as error:
-            print('An error occurred: {0}'.format(error))
+    try:
+        for root, dirs, files in os.walk(path, topdown=False):
+                for name in files:
+                    os.remove(os.path.join(root, name))
+                for name in dirs:
+                    os.rmdir(os.path.join(root, name))
+        os.rmdir(path)
+    except Exception as error:
+        print('An error occurred: {0}'.format(error))
 
 def main():
     """
@@ -220,7 +222,7 @@ def main():
     credentials = get_credentials()
     http        = credentials.authorize(httplib2.Http())
     service     = discovery.build('gmail', 'v1', http=http)
-    
+
     # check if config provides labelId else search from Name
     settings  = json.load(open('gmail.json'))
     gmailConf = settings["GMail"]
@@ -234,6 +236,10 @@ def main():
 
     messages = ListMessagesWithLabel(service, 'me', label_id)
     storageFolder = settings["Settings"]["StorageFolder"]
+
+    if not os.path.exists(storageFolder):
+        os.makedirs(storageFolder)
+
     for message in messages:
         #print (json.dumps(message, indent=4, sort_keys=True))
 
@@ -245,7 +251,7 @@ def main():
 
     # zip folder with attachment
     zipf = zipfile.ZipFile(
-        'gpei_files_{0}.zip'.format(time.strftime("%Y%m%d-%H%M%S")), 
+        'gpei_files_{0}.zip'.format(time.strftime("%Y%m%d-%H%M%S")),
         'w', zipfile.ZIP_DEFLATED)
     Zipdir(storageFolder, zipf)
 
