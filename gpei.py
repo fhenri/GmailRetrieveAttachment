@@ -247,7 +247,7 @@ def main():
         # once processed check if we can remove the message
         if settings["Settings"]["RemoveMessages"]:
             print("remove messages")
-            #DeleteMessage(service, 'me', message['id'])
+            DeleteMessage(service, 'me', message['id'])
 
     # zip folder with attachment
     zipf = zipfile.ZipFile(
